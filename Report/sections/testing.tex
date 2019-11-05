@@ -1,0 +1,62 @@
+\section{Testing}
+Software testing is an important part of maintaining correctness and quality over the development lifecycle of an application.
+To prevent regressions and to identify potential shortcommings of the {\dhr} library a comprehensive test suite was developed.
+The test suite is based on the TAP package~\cite{fnogatzTap}.
+
+\subsection{Test Definition}
+Each test file must have the following declaration as part of it's source code before any test can be implemented in said file. \inlineCode{:- use_module(library(dhr/test/run_example)).}
+This module is used to setup the term expansion and other modules for the test framework.
+For consistent and readable test definition an operator \inlineCode{''=>''} was defined.
+The left side of the operator may consist of a conjunction of constraints, interweaved with regular prolog code.
+The right side of the operator defines the result of the operation.
+Results may be of the following types:
+\begin{itemize}
+\item A \textbf{conjunction of result constraints}, representing the resulting constraint store
+\item the predicate \textbf{\inlineCode{true}} signaling a succesful execution with an empty result constraint store
+\item the predicate \textbf{\inlineCode{fail}}, or \textbf{\inlineCode{false}}, indicating that the execution is supposed to fail.
+\item the atom \textbf{\inlineCode{exception}} indicating that the execution is supposed to result in an exception being thrown
+\end{itemize}
+The test file may also contain an arbitrary amount of prolog code to setup the necessary environment for the test.
+
+\noindent Since the result of many chr programs is independent of the order of the input constraints the operator \inlineCode{\~} was defined.
+Said operator creates multiple tests, one for each permutation of the input constraints.
+This greatly reduces boilerplate and assures that no permutation is forgotten.
+
+
+\subsection{Examples}
+In following section shows a collection of example test files to create a more intuitive understanding of their structure.
+\newpage %remove if future work is added, only for layouting reasons
+\subsubsection{Greatest Common Denominator (gcd)}
+
+\begin{lstlisting}[frame=single, caption=test file for the greatest common denominator chr program, label={lst:test:gcd}]
+:- use_module(library(dhr/test/run_example)).
+% Program
+:- chr_constraint gcd/1.
+gcd(0) <=> true.
+gcd(N) \ gcd(M) <=> M >= N | NN is M-N, gcd(NN).
+% Tests
+~ gcd(6), gcd(9) => gcd(3).
+~ gcd(9), gcd(2) => gcd(1).
+~ gcd(14), gcd(21) => gcd(7).
+~ gcd(32), gcd(48) => gcd(16).
+~ gcd(126), gcd(32), gcd(96), gcd(58) => gcd(2).
+~ gcd(a), gcd(b) => exception.
+\end{lstlisting}
+
+\subsubsection{Depth First Search}
+
+\begin{lstlisting}[frame=single, caption=test file for a depth first search chr program, label={lst:test:dfsearch}]
+:- use_module(library(dhr/test/run_example)).
+% Program
+:- chr_constraint dfsearch/2.
+leaf          @ dfsearch(leaf(Val), X) <=> X == Val.
+node_found    @ dfsearch(node(Val, _, _), Val) <=> true.
+node_search   @ dfsearch(node(Val, L, R), X) <=> X \== Val |
+                  ( dfsearch(L, X) ; dfsearch(R, X) ).
+% Tests
+dfsearch(node(0, node(1, leaf(2), leaf(3)), leaf(4)), 0)=>true.
+dfsearch(node(0, node(1, leaf(2), leaf(3)), leaf(4)), 4)=>true.
+dfsearch(node(0, node(1, leaf(2), leaf(3)), leaf(4)), 5)=>false.
+\end{lstlisting}
+
+\newpage

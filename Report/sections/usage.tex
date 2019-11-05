@@ -1,0 +1,76 @@
+\section{Usage}
+The usage of the {\dhr} library is strongly dictated by the usage of the CHR library, since one of the main goals was being a drop-in replacement for the original CHR library.
+{\dhr} allows users to declare constraints, define rules, as well as query the current program.
+
+\subsection{Constraint Declaration}
+Every constraint used in a program has to be declared using the \inlineCode{chr_constraint/1} declaration.
+For example a constraint consisting of the functor name \inlineCode{foo} with two arguments would be declared as follows:
+
+\begin{lstlisting}[frame=single, caption=single constraint declaration]
+:- chr_constraint foo/2.
+\end{lstlisting}
+
+Forthermore, constraint declarations may be combined via a comma-separated list, or split throughout the program, making the following examples valid.
+
+\begin{lstlisting}[frame=single,caption=multiple constraint declarations separated by arbitrary code]
+:- chr_constraint foo/2, bar/0.
+% [...]
+:- chr_constraint baz/4.
+\end{lstlisting}
+
+
+\subsection{Rule Definition}\label{sec:rule_def}
+The definition of a rule consists of multiple parts, that are dependent on the type of rule.
+The different types of rules and their respective definition patterns, as described in~\cite{fruhwirth2008welcome}, are as follows:
+\begin{itemize}
+\item Simplification rule: $Name $ @ $  H \Leftrightarrow G $ | $ B$
+
+\hspace{100pt} [Name '@']   H '<=>' [G  '|']  B.
+\item Propagation rule:\quad $Name $ @ $  H \Rightarrow G $ | $ B$
+
+\hspace{100pt} [Name '@']   H '==>' [G  '|']  B.
+\item Simpagation rule:\quad $Name $ @ $  H_1 $ {\textbackslash} $ H_2 \Leftrightarrow G $ | $ B$
+
+\hspace{100pt} [Name '@']   $H_1$ {\textbackslash} $H_2$ '<=>' [G  '|']  B.
+\end{itemize}
+
+\noindent Since simpagation rules are a generalization of both the simplification and porpagation rules, all rules are internaly represented as simpagation rules.
+If the original rule was a simplification, then $H_1$ is empty.
+Should the original rule have been a propagation rule $H_2$ is empty.
+In literature such a representation is refered to as generalized simpagation rule.
+
+\subsection{Examples}
+The following section is a collections of sample programs and their usages.
+
+\subsubsection{Greatest Common Denominator (gcd)}
+
+\begin{lstlisting}[frame=single, caption=chr program for calculating the greatest common denominator, label={lst:gcd}]
+%Imports
+% [...]
+%Program
+:- chr_constraint gcd/1.
+gcd(0) <=> true.
+gcd(N) \ gcd(M) <=> M >= N | NN is M - N, gcd(NN).
+\end{lstlisting}
+The program depicted in \ref{lst:gcd} can be queried as follows:\\
+\inlineCode{?- gcd(6),gcd(9)}\\
+Resulting in an output of:\\
+\inlineCode{[gcd(3)]}
+
+\subsubsection{Transitive Closure}
+
+\begin{lstlisting}[frame=single, caption=chr program for calculating the transitive closure of a graph, label={lst:tc}]
+%Imports
+% [...]
+%Program
+:- chr_constraint edge/2, path/2.
+rem_dup  @ path(X, Y) \ path(X, Y) <=> true.
+path_1   @ edge(X, Y) ==> path(X, Y).
+path_add @ edge(X, Y), path(Y, Z) ==> X \== Y,
+                                      Y \== Z | path(X, Z).
+\end{lstlisting}
+The program depicted in \ref{lst:tc} can be queried as follows:\\
+\inlineCode{?- edge(1, 2), edge(2, 3), edge(2, 4)}\\
+Resulting in an output of:\\
+\inlineCode{[edge(2, 4), edge(2, 3), edge(1, 2), path(1, 4), path(2, 4), path(1, 3), path(2, 3), path(1, 2)]}
+\newpage

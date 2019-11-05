@@ -1,0 +1,85 @@
+\documentclass[12pt,a4paper,twoside]{article}
+
+\usepackage{amssymb,amsthm,graphicx,hyperref}
+\usepackage[utf8]{inputenc}
+\usepackage{underscore}
+\usepackage{listings}
+
+\oddsidemargin0mm
+\evensidemargin0mm
+\textwidth159.2mm
+\topmargin0mm
+\headheight0mm
+\textheight43\baselineskip
+\bibliographystyle{alpha}
+\urlstyle{rm}
+
+\setcounter{page}{1}
+
+\include{header}
+
+\renewcommand{\proofname}{Beweis}
+\theoremstyle{plain}\newtheorem{Lemma}{Lemma}
+\theoremstyle{plain}\newtheorem{Satz}[Lemma]{Satz}
+\theoremstyle{definition}\newtheorem{Definition}[Lemma]{Definition}
+\theoremstyle{definition}\newtheorem*{Example}{Example}
+\theoremstyle{remark}\newtheorem*{Bemerkung}{Bemerkung}
+\newtheorem{satz}{Satz}
+\newtheorem{definition}[satz]{Definition}
+\newenvironment{beweis}{\begin{proof}}{\end{proof}}
+
+%%%%%%%%%%%%%%%configs%%%%%
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%Commands%%%%
+%
+\newcommand{\dhr}{DHR}
+\newcommand{\inlineCode}[1]{\texttt{#1}}
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\title{CHR Library using Delimited Control}
+\author{Simon Hümmer}
+\newcommand{\projectName}{Praktikumsbericht} % short name
+
+\date{\today}
+\begin{titlepage}
+	\centering
+	\hspace*{-2.54cm}\includegraphics[width=\paperwidth]{logo.png}\par\vspace{1cm}
+	%{\scshape\LARGE Universität Würzburg \par}
+	\vspace{1cm}
+	{\scshape\Large \projectName\par}
+	\vspace{1.5cm}
+	{\huge\bfseries \thetitle\par}
+	{\Large \theauthor\par}
+	\vfill
+	betreut durch\par
+	Prof. Dr. Dietmar Seipel\\
+	M.Sc. Falco Nogatz
+
+	\vfill
+
+% Bottom of the page
+	{\large \today \par}
+\end{titlepage}
+\newpage
+\tableofcontents
+\newpage
+
+\input{sections/introduction}
+\input{sections/usage}
+\input{sections/representations}
+\input{sections/implementation}
+\input{sections/testing}
+\input{sections/futureWork}
+
+\newpage
+\bibliography{Literature}
+\end{document}
+
+\grid
+\grid
